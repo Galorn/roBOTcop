@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -15,10 +17,15 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+import dto.Article;
 import util.MainPageHandler;
 import util.TimeUtils;
 
@@ -54,37 +61,98 @@ public class PageInformation {
 	
 	public void monitorMainPage(){
 		System.out.println("monitor main Page");
-		// Open a webclient
-		 try (WebClient webClient = new WebClient()) {
-			 	// open the supreme page shop all
-			 	HtmlPage page = webClient.getPage("https://www.supremenewyork.com/shop/all");
-			 	// process the page as XML
-		        final String pageAsXml = page.asXml();
-		        // process the page as TXT
-		        final String pageAsText = page.asText();
-		        // get the time as expected from the util package
-		        String dateSeconds = timer.getDate();
-		        // define the filename
-		        String fileNameXML = "D:/temp/test" + dateSeconds + ".xml";
-		        String fileNameTXT = "D:/temp/test" + dateSeconds + ".txt";
-		        // write into .txt file
-		        BufferedWriter writer = new BufferedWriter(new FileWriter(fileNameTXT));
-		        writer.write(pageAsText);
-		        writer.close();
-		        // write into .xml file
-		        BufferedWriter writerXML = new BufferedWriter(new FileWriter(fileNameXML));
-		        writerXML.write(pageAsXml);
-		        writerXML.close();
-		        System.out.println(pageAsText.contains("Support for the HTTP and HTTPS protocols"));
-		        // processing text file
-		        readPageFile(dateSeconds, fileNameTXT);
-		        //readPageFIleAsXML(dateSeconds, fileNameXML);
-		 } catch (Exception e){
-			 System.out.println(e);
-			 System.out.println("catch");
-		 }
+
+		Document document;
+		try {
+			// se connecte au site
+			document = Jsoup.connect("https://www.supremenewyork.com/shop/all").get();
+			// liste tous les éléments de la classe inner-article (i.e. tout ce qu'il y a sur la page
+			Elements elements = document.getElementsByClass("inner-article");
+			List<Element> articlesSoldOut = new ArrayList<Element>();
+			List<Element> articlesEnStock = new ArrayList<Element>();
+			for (Element element : elements) {
+				// extrait chaque link a des articles 
+				Element link = element.select("a").first();
+				System.out.println(link.toString());
+				// Vérifié si element sold out 
+				if (!link.getElementsByClass("sold_out_tag").isEmpty()) {
+					System.out.println("found sold out tag");
+					// ajoute les articles sold out
+					articlesSoldOut.add(link);
+				} else {
+					articlesEnStock.add(link);
+				}
+				String relHref = link.attr("href"); // URL relative 
+				String[] relHrefSplit = relHref.split("/");
+				System.out.println(relHref);
+				System.out.println(relHrefSplit[2]);
+				System.out.println(relHrefSplit[relHrefSplit.length -1]);
+				String absHref = link.attr("abs:href"); // URL complete
+			}
+
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	/**
+	 * Classe pour process les éléments et en sortir des vrais objets 
+	 * @param articles
+	 * @return
+	 */
+	public List<Article> processList(List<Element> articles) {
+		
+		for (Element article : articles) {
+			
+		}
+		return null;
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//
 	// Goal : read the .txt file (whole front page in XML) and produce a file containing the href 
 	// parameters : 
 		// dateSeconds : the date in Seconds that has to be sync for the name of the file 
