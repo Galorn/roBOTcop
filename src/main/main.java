@@ -8,11 +8,7 @@ import configuration.StartupConfiguration;
 import webProcessing.PageInformation;
 
 public class main {
-	
-	
-
 		  public static void main(String[] args){ 
-		    System.out.println("test");
 		    // lancement configuration
 		    StartupConfiguration.initializeConfiguration();
 		    // lancement proxy
