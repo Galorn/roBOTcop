@@ -16,6 +16,7 @@ import org.jsoup.select.Elements;
 
 import dto.Article;
 import dto.ArticleGeneral;
+import rssPackage.RSSMain;
 import util.CSVFileCreator;
 import util.TimeUtils;
 
@@ -24,6 +25,7 @@ public class PageInformation {
 	private static final Logger logger = LogManager.getLogger(PageInformation.class);
 	private static final TimeUtils timer = new TimeUtils();
 	private CSVFileCreator csvFIleCreator = new CSVFileCreator();
+	private RSSMain rssmain = new RSSMain();
 	private final int VALEURMIN = 0;
 	private final int VALEURMAX = 10;
 	
@@ -39,6 +41,7 @@ public class PageInformation {
 	    	List<ArticleGeneral> allArticles = extractAllArticle(listsOfArticle);
 	    	List <Article> articles = processAllArticles(allArticles);
 	    	boolean isCSVOut = csvFIleCreator.createCSVofAllArticles(articles, date);
+	    	rssmain.rssStart();
 	    	// get sleepTime
 		    try {
 		    	Random r = new Random();
